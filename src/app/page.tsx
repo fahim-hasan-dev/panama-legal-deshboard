@@ -92,14 +92,9 @@ export default function OverviewPage() {
 
   const caseColumns = [
     {
-      header: "Case ID & Title",
+      header: "Case Title",
       cell: (c: any) => (
-        <div className="space-y-0.5">
-          <span className="text-[11px] font-bold text-[#2E5089] bg-[#2E5089]/10 px-2 py-0.5 rounded-md">
-            {c.caseNumber || c._id || c.id}
-          </span>
-          <p className="font-semibold text-slate-900 text-xs mt-1">{c.title}</p>
-        </div>
+        <span className="font-semibold text-slate-900 text-xs">{c.title}</span>
       ),
     },
     {

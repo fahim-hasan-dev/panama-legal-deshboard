@@ -44,19 +44,6 @@ export default function CasesPage() {
     }
   };
 
-  const handleUpdateStatus = async (caseId: string, newStatus: string) => {
-    try {
-      await api.patch(`/case/status/${caseId}`, { status: newStatus });
-      toast.success(`Case status updated to ${newStatus}`);
-      if (selectedCase && (selectedCase._id === caseId || selectedCase.id === caseId)) {
-        setSelectedCase({ ...selectedCase, status: newStatus });
-      }
-      refresh();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update case status");
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -119,7 +106,6 @@ export default function CasesPage() {
         selectedCase={selectedCase}
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
-        onUpdateStatus={handleUpdateStatus}
       />
     </div>
   );
