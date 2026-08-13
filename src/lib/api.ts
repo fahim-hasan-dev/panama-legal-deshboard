@@ -65,9 +65,14 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestOption
 
   if (!response.ok) {
     if (response.status === 401 && typeof window !== "undefined") {
+      deleteCookie("accessToken");
       deleteCookie("token");
+      deleteCookie("user");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
 
     const firstErrorMessage =

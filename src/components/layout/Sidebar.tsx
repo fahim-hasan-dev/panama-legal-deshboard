@@ -45,7 +45,6 @@ export const navItems = [
   { title: "Articles", href: "/articles", icon: FileText },
   { title: "Lawyer Reviews", href: "/reviews", icon: Star },
   { title: "Public Content", href: "/public-content", icon: Globe },
-  { title: "Notifications", href: "/notifications", icon: Bell },
   { title: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -70,14 +69,14 @@ export function Sidebar({
       >
         {/* Top Header Logo */}
         <div>
-          <div className="h-16 flex items-center justify-between px-4 border-b border-slate-700/60">
+          <div className="h-20 flex items-center justify-between px-4 border-b border-slate-700/60">
             <Link href="/" className="flex items-center gap-3 overflow-hidden">
-              <div className="h-9 w-9 rounded-lg bg-[#2E5089] flex items-center justify-center text-white shrink-0 shadow-xs">
+              <div className="h-10 w-10 rounded-xl bg-[#2E5089] flex items-center justify-center text-white shrink-0 shadow-xs">
                 <Scale className="w-5 h-5" />
               </div>
               {!collapsed && (
                 <div className="truncate">
-                  <h1 className="font-bold text-xs tracking-wide text-white leading-tight">
+                  <h1 className="font-bold text-sm tracking-wider text-white leading-tight">
                     PV & ASOCIADOS
                   </h1>
                   <p className="text-[10px] text-slate-400 font-normal">Legal Group Admin</p>
@@ -95,7 +94,7 @@ export function Sidebar({
           </div>
 
           {/* Nav Items */}
-          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)] no-scrollbar">
+          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-160px)] no-scrollbar">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -108,9 +107,9 @@ export function Sidebar({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                    "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer",
                     isActive
-                      ? "bg-[#2E5089] text-white font-semibold shadow-xs"
+                      ? "bg-[#2E5089] text-white shadow-xs"
                       : "text-slate-300 hover:text-white hover:bg-slate-800/60"
                   )}
                   title={collapsed ? item.title : undefined}

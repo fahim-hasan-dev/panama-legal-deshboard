@@ -46,22 +46,31 @@ export function AuthProvider({
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  const isValidToken = (t: any) => typeof t === "string" && t.trim() !== "" && t !== "undefined" && t !== "null";
+
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const storedToken = (getCookie("accessToken") as string) || (getCookie("token") as string) || localStorage.getItem("token");
+        const rawToken =
+          (getCookie("accessToken") as string) ||
+          (getCookie("token") as string) ||
+          localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
+
+        const storedToken = isValidToken(rawToken) ? rawToken : null;
 
         if (storedToken) {
           setTokenState(storedToken);
-          if (storedUser) {
+          if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
             try {
               setUserState(JSON.parse(storedUser));
             } catch {
               setUserState(storedUser);
             }
           }
+          setIsLoading(false);
 
+          // Background sync profile
           try {
             const res = await api.get("/user/me");
             if (res?.data) {
@@ -70,11 +79,28 @@ export function AuthProvider({
             }
           } catch (error) {
             console.error("Failed to fetch user profile:", error);
+            setTokenState(null);
+            setUserState(null);
+            deleteCookie("accessToken");
+            deleteCookie("token");
+            deleteCookie("user");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
           }
+        } else {
+          setTokenState(null);
+          setUserState(null);
+          deleteCookie("accessToken");
+          deleteCookie("token");
+          deleteCookie("user");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setIsLoading(false);
         }
       } catch (err) {
         console.error("Auth init error:", err);
-      } finally {
+        setTokenState(null);
+        setUserState(null);
         setIsLoading(false);
       }
     };
@@ -113,7 +139,6 @@ export function AuthProvider({
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
     try {
       const res = await api.post("/auth/admin-login", { email, password });
       
@@ -126,8 +151,10 @@ export function AuthProvider({
           setUser(userData);
         }
 
-        toast.success(res?.message || "Login successful!");
-        router.push("/");
+        toast.success(res?.message || "Login successful! Welcome back.");
+        if (typeof window !== "undefined") {
+          window.location.replace("/");
+        }
         return true;
       } else {
         toast.error("No access token returned from server.");
@@ -136,8 +163,6 @@ export function AuthProvider({
     } catch (error: any) {
       toast.error(error?.message || "Login failed. Please check your credentials.");
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -145,7 +170,9 @@ export function AuthProvider({
     setToken(null);
     setUser(null);
     toast.success("Logged out successfully");
-    router.push("/login");
+    if (typeof window !== "undefined") {
+      window.location.replace("/login");
+    }
   };
 
   const updateUser = (updatedUser: Partial<User>) => {

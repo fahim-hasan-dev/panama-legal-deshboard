@@ -15,9 +15,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !token && pathname !== "/login") {
-      router.push("/login");
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      }
     }
-  }, [token, isLoading, pathname, router]);
+  }, [token, isLoading, pathname]);
+
+  if (pathname === "/login") {
+    return <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -28,8 +34,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (pathname === "/login") {
-    return <>{children}</>;
+  if (!token) {
+    return null;
   }
 
   return (
@@ -41,7 +47,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           collapsed ? "lg:ml-20" : "lg:ml-64"
         }`}
       >
-        <Navbar toggleSidebar={() => setCollapsed(!collapsed)} />
+        <Navbar />
         <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>

@@ -29,7 +29,7 @@ export function CaseListTable({ cases, isLoading, onViewDetails }: CaseListTable
       header: "Client",
       cell: (c: any) => (
         <span className="text-xs text-slate-700 font-medium">
-          {c.client?.fullName || c.client?.name || "Citizen Client"}
+          {c.citizen?.fullName || c.citizen?.name || c.client?.fullName || c.client?.name || "Citizen Client"}
         </span>
       ),
     },
@@ -43,20 +43,27 @@ export function CaseListTable({ cases, isLoading, onViewDetails }: CaseListTable
     },
     {
       header: "Status",
-      cell: (c: any) => (
-        <Badge
-          variant={
-            c.status === "active"
-              ? "default"
-              : c.status === "resolved"
-              ? "success"
-              : "warning"
-          }
-          className="capitalize font-semibold text-xs"
-        >
-          {c.status || "pending"}
-        </Badge>
-      ),
+      cell: (c: any) => {
+        const status = (c.status || "pending").toLowerCase();
+        let colorClasses = "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-100";
+        
+        if (status === "active" || status === "accepted") {
+          colorClasses = "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-100";
+        } else if (status === "resolved" || status === "closed") {
+          colorClasses = "bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-100";
+        } else if (status === "cancelled" || status === "rejected") {
+          colorClasses = "bg-rose-100 text-rose-800 border-rose-300 hover:bg-rose-100";
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className={`capitalize font-semibold text-xs border px-2.5 py-0.5 ${colorClasses}`}
+          >
+            {c.status || "pending"}
+          </Badge>
+        );
+      },
     },
     {
       header: "Date Filed",

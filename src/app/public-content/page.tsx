@@ -1,54 +1,81 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { api } from "@/lib/api";
-import { Globe, Plus, Trash2, Edit, HelpCircle, Mail, FileText } from "lucide-react";
+import {
+  Globe,
+  Plus,
+  Trash2,
+  Edit,
+  HelpCircle,
+  ShieldCheck,
+  FileCode2,
+  AlertTriangle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { DashboardTable } from "@/components/shared/DashboardTable";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import toast from "react-hot-toast";
 
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "clean"],
+  ],
+};
+
 export default function PublicContentPage() {
   const [faqs, setFaqs] = useState<any[]>([]);
-  const [contacts, setContacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // FAQ Modal State
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
 
+  // FAQ Delete Confirmation State
+  const [deletingFaq, setDeletingFaq] = useState<any | null>(null);
+
+  // Legal Pages State
   const [privacyPolicy, setPrivacyPolicy] = useState("");
   const [terms, setTerms] = useState("");
-  const [savingPolicy, setSavingPolicy] = useState(false);
+  const [savingPrivacy, setSavingPrivacy] = useState(false);
+  const [savingTerms, setSavingTerms] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [faqRes, contactRes, publicRes] = await Promise.allSettled([
+      const [faqRes, privacyRes, termsRes] = await Promise.allSettled([
         api.get("/public/faq/all"),
-        api.get("/public/contact/all"),
-        api.get("/public"),
+        api.get("/public/privacy-policy"),
+        api.get("/public/terms-and-conditions"),
       ]);
 
       const faqData = faqRes.status === "fulfilled" && faqRes.value?.data ? faqRes.value.data : [];
-      const contactData = contactRes.status === "fulfilled" && contactRes.value?.data ? contactRes.value.data : [];
-      const publicData = publicRes.status === "fulfilled" && publicRes.value?.data ? publicRes.value.data : {};
+      const privacyData = privacyRes.status === "fulfilled" && privacyRes.value?.data ? privacyRes.value.data : null;
+      const termsData = termsRes.status === "fulfilled" && termsRes.value?.data ? termsRes.value.data : null;
 
       setFaqs(Array.isArray(faqData) ? faqData : []);
-      setContacts(Array.isArray(contactData) ? contactData : []);
-      if (publicData.privacyPolicy) setPrivacyPolicy(publicData.privacyPolicy);
-      if (publicData.termsAndConditions) setTerms(publicData.termsAndConditions);
+      if (privacyData?.content) setPrivacyPolicy(privacyData.content);
+      if (termsData?.content) setTerms(termsData.content);
     } catch (err: any) {
       toast.error(err?.message || "Failed to load public content");
     } finally {
@@ -62,13 +89,13 @@ export default function PublicContentPage() {
 
   const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!question || !answer) return;
+    if (!question.trim() || !answer.trim()) return;
     try {
       if (editingFaqId) {
-        await api.patch(`/public/faq/${editingFaqId}`, { question, answer });
+        await api.patch(`/public/faq/${editingFaqId}`, { question: question.trim(), answer: answer.trim() });
         toast.success("FAQ updated!");
       } else {
-        await api.post("/public/faq", { question, answer });
+        await api.post("/public/faq", { question: question.trim(), answer: answer.trim() });
         toast.success("FAQ created!");
       }
       setShowFaqModal(false);
@@ -81,50 +108,33 @@ export default function PublicContentPage() {
     }
   };
 
-  const handleDeleteFaq = async (id: string) => {
+  const confirmDeleteFaq = async () => {
+    if (!deletingFaq) return;
+    const id = deletingFaq._id || deletingFaq.id;
     try {
       await api.delete(`/public/faq/${id}`);
-      toast.success("FAQ deleted");
+      toast.success("FAQ deleted successfully!");
       setFaqs(faqs.filter((f) => (f._id || f.id) !== id));
+      setDeletingFaq(null);
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete FAQ");
     }
   };
 
-  const handleSaveLegalPages = async (type: string, content: string) => {
-    setSavingPolicy(true);
+  const handleSaveLegalPages = async (type: "privacy-policy" | "terms-and-conditions", content: string) => {
+    if (type === "privacy-policy") setSavingPrivacy(true);
+    else setSavingTerms(true);
+
     try {
       await api.post("/public", { type, content });
-      toast.success(`${type} saved successfully!`);
+      toast.success(`${type === "privacy-policy" ? "Privacy Policy" : "Terms & Conditions"} saved successfully!`);
     } catch (err: any) {
       toast.error(err?.message || `Failed to update ${type}`);
     } finally {
-      setSavingPolicy(false);
+      setSavingPrivacy(false);
+      setSavingTerms(false);
     }
   };
-
-  const contactColumns = [
-    {
-      header: "Sender Name",
-      cell: (c: any) => <span className="font-semibold text-slate-900 text-sm">{c.name}</span>,
-    },
-    {
-      header: "Email",
-      cell: (c: any) => <span className="text-xs text-slate-600">{c.email}</span>,
-    },
-    {
-      header: "Subject",
-      cell: (c: any) => <span className="text-xs font-semibold text-[#2E5089]">{c.subject || "General Inquiry"}</span>,
-    },
-    {
-      header: "Message Body",
-      cell: (c: any) => <span className="text-xs text-slate-700 max-w-xs truncate block">{c.message}</span>,
-    },
-    {
-      header: "Date Sent",
-      cell: (c: any) => <span className="text-xs text-slate-500">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "N/A"}</span>,
-    },
-  ];
 
   return (
     <div className="space-y-6">
@@ -132,9 +142,11 @@ export default function PublicContentPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#16253E] tracking-tight flex items-center gap-2">
             <Globe className="w-6 h-6 text-[#2E5089]" />
-            Public Content & Legal Terms
+            Public Content Management
           </h1>
-          <p className="text-xs text-slate-500 font-normal">Manage FAQs, user contact submissions, Privacy Policy, and Terms of Service.</p>
+          <p className="text-xs text-slate-500 font-normal">
+            Manage FAQs, Privacy Policy, and Terms of Service presented to citizens and legal professionals.
+          </p>
         </div>
       </div>
 
@@ -142,21 +154,32 @@ export default function PublicContentPage() {
         <TabsList>
           <TabsTrigger value="faq" className="gap-2">
             <HelpCircle className="w-4 h-4" />
-            <span>FAQ Management ({faqs.length})</span>
+            <span>FAQs ({faqs.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="contacts" className="gap-2">
-            <Mail className="w-4 h-4" />
-            <span>Contact Messages ({contacts.length})</span>
+
+          <TabsTrigger value="privacy" className="gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Privacy Policy</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="gap-2">
-            <FileText className="w-4 h-4" />
-            <span>Privacy & Terms Editor</span>
+
+          <TabsTrigger value="terms" className="gap-2">
+            <FileCode2 className="w-4 h-4" />
+            <span>Terms & Conditions</span>
           </TabsTrigger>
         </TabsList>
 
+        {/* FAQs Tab */}
         <TabsContent value="faq" className="mt-6 space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => { setEditingFaqId(null); setQuestion(""); setAnswer(""); setShowFaqModal(true); }} className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold text-xs gap-1.5">
+            <Button
+              onClick={() => {
+                setEditingFaqId(null);
+                setQuestion("");
+                setAnswer("");
+                setShowFaqModal(true);
+              }}
+              className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold text-xs gap-1.5"
+            >
               <Plus className="w-4 h-4" />
               Add FAQ Item
             </Button>
@@ -183,15 +206,17 @@ export default function PublicContentPage() {
                             setAnswer(f.answer);
                             setShowFaqModal(true);
                           }}
-                          className="h-8 w-8 p-0 text-slate-500"
+                          className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
+                          title="Edit FAQ"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteFaq(f._id || f.id)}
+                          onClick={() => setDeletingFaq(f)}
                           className="h-8 w-8 p-0 text-red-500 hover:bg-red-50"
+                          title="Delete FAQ"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -207,66 +232,86 @@ export default function PublicContentPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="contacts" className="mt-6">
-          <DashboardTable
-            data={contacts}
-            columns={contactColumns}
-            loading={loading}
-            emptyText="No contact messages received yet."
-          />
-        </TabsContent>
+        {/* Privacy Policy Tab with WYSIWYG ReactQuill Editor */}
+        <TabsContent value="privacy" className="mt-6">
+          <Card className="shadow-xs border border-slate-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <CardTitle className="text-base font-bold text-[#16253E] flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#2E5089]" />
+                  Privacy Policy Editor
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500">
+                  Formatted privacy policy content for public web and mobile apps.
+                </CardDescription>
+              </div>
 
-        <TabsContent value="legal" className="mt-6 space-y-6">
-          <Card className="shadow-xs">
-            <CardHeader>
-              <CardTitle className="text-base font-bold text-[#16253E]">Privacy Policy Editor</CardTitle>
-              <CardDescription className="text-xs text-slate-500">Public privacy policy displayed in mobile & web apps</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                rows={6}
-                value={privacyPolicy}
-                placeholder="Enter privacy policy text..."
-                onChange={(e) => setPrivacyPolicy(e.target.value)}
-              />
               <Button
                 onClick={() => handleSaveLegalPages("privacy-policy", privacyPolicy)}
-                disabled={savingPolicy}
-                className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold"
+                disabled={savingPrivacy}
+                className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold text-xs"
               >
-                Save Privacy Policy
+                {savingPrivacy ? "Saving..." : "Save Privacy Policy"}
               </Button>
+            </CardHeader>
+
+            <CardContent className="p-4 space-y-3">
+              <div className="bg-white rounded-lg">
+                <ReactQuill
+                  theme="snow"
+                  value={privacyPolicy}
+                  onChange={setPrivacyPolicy}
+                  modules={quillModules}
+                  placeholder="Compose privacy policy content..."
+                />
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className="shadow-xs">
-            <CardHeader>
-              <CardTitle className="text-base font-bold text-[#16253E]">Terms & Conditions Editor</CardTitle>
-              <CardDescription className="text-xs text-slate-500">Terms of service agreement for citizens & lawyers</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                rows={6}
-                value={terms}
-                placeholder="Enter terms & conditions text..."
-                onChange={(e) => setTerms(e.target.value)}
-              />
+        {/* Terms & Conditions Tab with WYSIWYG ReactQuill Editor */}
+        <TabsContent value="terms" className="mt-6">
+          <Card className="shadow-xs border border-slate-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <CardTitle className="text-base font-bold text-[#16253E] flex items-center gap-2">
+                  <FileCode2 className="w-4 h-4 text-[#2E5089]" />
+                  Terms & Conditions Editor
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500">
+                  Legal terms and service agreement for citizens and lawyers.
+                </CardDescription>
+              </div>
+
               <Button
                 onClick={() => handleSaveLegalPages("terms-and-conditions", terms)}
-                disabled={savingPolicy}
-                className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold"
+                disabled={savingTerms}
+                className="bg-[#2E5089] hover:bg-[#244172] text-white font-semibold text-xs"
               >
-                Save Terms & Conditions
+                {savingTerms ? "Saving..." : "Save Terms & Conditions"}
               </Button>
+            </CardHeader>
+
+            <CardContent className="p-4 space-y-3">
+              <div className="bg-white rounded-lg">
+                <ReactQuill
+                  theme="snow"
+                  value={terms}
+                  onChange={setTerms}
+                  modules={quillModules}
+                  placeholder="Compose terms & conditions content..."
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
+      {/* Add / Edit FAQ Modal */}
       <Dialog open={showFaqModal} onOpenChange={setShowFaqModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-lg font-bold text-[#16253E]">
               {editingFaqId ? "Edit FAQ Item" : "Create New FAQ"}
             </DialogTitle>
           </DialogHeader>
@@ -306,6 +351,36 @@ export default function PublicContentPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete FAQ Confirmation Modal */}
+      <Dialog open={!!deletingFaq} onOpenChange={(open) => !open && setDeletingFaq(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              Confirm FAQ Deletion
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Are you sure you want to delete this FAQ? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          {deletingFaq && (
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg my-2">
+              <p className="text-xs font-bold text-slate-800">{deletingFaq.question}</p>
+            </div>
+          )}
+
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setDeletingFaq(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteFaq}>
+              Delete FAQ
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

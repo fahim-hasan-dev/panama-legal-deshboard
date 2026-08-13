@@ -19,17 +19,15 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       toast.error("Please enter email and password.");
       return;
     }
     setLoading(true);
     try {
-      await login(email, password);
-      toast.success("Welcome back to Admin Portal!");
-      router.push("/");
-    } catch (err: any) {
-      toast.error(err?.message || "Invalid credentials or unauthorized.");
+      await login(email.trim(), password.trim());
+    } catch {
+      // Error handling and toast are handled inside AuthContext.login
     } finally {
       setLoading(false);
     }

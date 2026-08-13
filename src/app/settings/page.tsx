@@ -13,28 +13,25 @@ import toast from "react-hot-toast";
 export default function SettingsPage() {
   const { user, updateUser } = useAuth();
 
-  const [name, setName] = useState(user?.name || "");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
-  const [address, setAddress] = useState(user?.address || "");
+  const [name, setName] = useState(user?.name || user?.fullName || "");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const [oldPassword, setOldPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
     setSavingProfile(true);
     try {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("phoneNumber", phoneNumber);
-      formData.append("address", address);
+      formData.append("fullName", name.trim());
 
       await api.patch("/user/profile", formData);
       toast.success("Profile updated successfully!");
-      updateUser({ name, phoneNumber, address });
+      updateUser({ name: name.trim(), fullName: name.trim() });
     } catch (err: any) {
       toast.error(err?.message || "Failed to update profile");
     } finally {
@@ -48,18 +45,19 @@ export default function SettingsPage() {
       toast.error("New passwords do not match!");
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
       return;
     }
     setSavingPassword(true);
     try {
       await api.post("/auth/change-password", {
-        oldPassword,
+        currentPassword,
         newPassword,
+        confirmPassword,
       });
       toast.success("Password changed successfully!");
-      setOldPassword("");
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
@@ -119,24 +117,6 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Phone Number</label>
-                  <Input
-                    placeholder="+507 6000-0000"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Office / Address</label>
-                  <Input
-                    placeholder="Panama City"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </div>
-
                 <Button
                   type="submit"
                   disabled={savingProfile}
@@ -164,8 +144,8 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     type="password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
                     required
                   />
                 </div>
