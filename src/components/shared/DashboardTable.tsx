@@ -28,7 +28,7 @@ export function DashboardTable<T extends { _id?: string; id?: string }>({
   emptyText = "No records found.",
 }: DashboardTableProps<T>) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden overflow-x-auto shadow-xs">
       <Table>
         <TableHeader>
           <TableRow className="bg-slate-50 border-b border-slate-200">

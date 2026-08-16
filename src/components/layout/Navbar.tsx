@@ -7,11 +7,16 @@ import {
   User as UserIcon,
   LogOut,
   Settings,
+  Menu,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { navItems } from "./Sidebar";
 
-export function Navbar() {
+export function Navbar({
+  setMobileOpen,
+}: {
+  setMobileOpen?: (v: boolean) => void;
+}) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -40,13 +45,21 @@ export function Navbar() {
   }, [showProfileMenu]);
 
   return (
-    <header className="sticky top-0 z-30 h-20 bg-white border-b border-slate-200 px-6 md:px-10 flex items-center justify-between shadow-xs">
-      <div className="flex items-center gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-[#16253E] tracking-tight">
+    <header className="sticky top-0 z-30 h-20 bg-white border-b border-slate-200 px-4 sm:px-6 md:px-10 flex items-center justify-between shadow-xs">
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <button
+          onClick={() => setMobileOpen?.(true)}
+          className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
+          title="Open Navigation Menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="min-w-0">
+          <h2 className="text-base sm:text-lg font-bold text-[#16253E] tracking-tight truncate">
             {currentNav?.title || "Dashboard"}
           </h2>
-          <p className="text-sm text-slate-500 font-medium mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium truncate mt-0.5">
             PV & ASOCIADOS Legal Group Administration
           </p>
         </div>

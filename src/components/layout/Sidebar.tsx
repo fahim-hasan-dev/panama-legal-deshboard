@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Shield,
   Award,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -43,7 +44,7 @@ export const navItems = [
   { title: "Case Questions", href: "/case-questions", icon: HelpCircle },
   { title: "Legal Library", href: "/library", icon: BookOpen },
   { title: "Articles", href: "/articles", icon: FileText },
-  { title: "Lawyer Reviews", href: "/reviews", icon: Star },
+  { title: "Reviews", href: "/reviews", icon: Star },
   { title: "Public Content", href: "/public-content", icon: Globe },
   { title: "Settings", href: "/settings", icon: Settings },
 ];
@@ -51,9 +52,13 @@ export const navItems = [
 export function Sidebar({
   collapsed,
   setCollapsed,
+  mobileOpen = false,
+  setMobileOpen,
 }: {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
+  mobileOpen?: boolean;
+  setMobileOpen?: (v: boolean) => void;
 }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
@@ -61,20 +66,31 @@ export function Sidebar({
 
   return (
     <>
+      {/* Mobile Drawer Backdrop Overlay */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen?.(false)}
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden animate-in fade-in-50"
+        />
+      )}
+
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen bg-[#16253E] text-slate-100 border-r border-slate-800/80 transition-all duration-300 flex flex-col justify-between shadow-sm",
-          collapsed ? "w-20" : "w-64"
+          "fixed top-0 left-0 z-50 h-screen bg-[#16253E] text-slate-100 border-r border-slate-800/80 transition-all duration-300 flex flex-col justify-between shadow-xl lg:shadow-sm",
+          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0",
+          collapsed ? "lg:w-20" : "lg:w-64"
         )}
       >
         {/* Top Header Logo */}
         <div>
           <div className="h-20 flex items-center justify-between px-4 border-b border-slate-700/60">
-            <Link href="/" className="flex items-center gap-3 overflow-hidden">
-              <div className="h-10 w-10 rounded-xl bg-[#2E5089] flex items-center justify-center text-white shrink-0 shadow-xs">
-                <Scale className="w-5 h-5" />
-              </div>
-              {!collapsed && (
+            <Link href="/" onClick={() => setMobileOpen?.(false)} className="flex items-center gap-3 overflow-hidden">
+              <img
+                src="/PV_logo_sidebar.png"
+                alt="PV & ASOCIADOS"
+                className="h-14 w-14 object-contain shrink-0 -ml-1"
+              />
+              {(!collapsed || mobileOpen) && (
                 <div className="truncate">
                   <h1 className="font-bold text-sm tracking-wider text-white leading-tight">
                     PV & ASOCIADOS
@@ -91,6 +107,14 @@ export function Sidebar({
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
+
+            <button
+              onClick={() => setMobileOpen?.(false)}
+              className="lg:hidden flex h-8 w-8 rounded-lg bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all cursor-pointer items-center justify-center shadow-xs"
+              title="Close navigation menu"
+            >
+              <X className="w-4.5 h-4.5" />
+            </button>
           </div>
 
           {/* Nav Items */}
@@ -106,16 +130,17 @@ export function Sidebar({
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setMobileOpen?.(false)}
                   className={cn(
                     "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer",
                     isActive
                       ? "bg-[#2E5089] text-white shadow-xs"
                       : "text-slate-300 hover:text-white hover:bg-slate-800/60"
                   )}
-                  title={collapsed ? item.title : undefined}
+                  title={collapsed && !mobileOpen ? item.title : undefined}
                 >
                   <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-white" : "text-slate-400")} />
-                  {!collapsed && <span className="truncate">{item.title}</span>}
+                  {(!collapsed || mobileOpen) && <span className="truncate">{item.title}</span>}
                 </Link>
               );
             })}

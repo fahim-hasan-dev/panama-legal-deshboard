@@ -34,19 +34,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-[#16253E] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-full bg-[#16253E] flex flex-col items-center justify-center p-4 py-8 overflow-y-auto">
+      <div className="w-full max-w-md -translate-y-4 sm:-translate-y-6 md:-translate-y-8">
         {/* Header Branding */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#2E5089] text-white flex items-center justify-center font-bold text-xl shadow-xs">
-              <Scale className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-bold text-white tracking-wider">
-              PV & ASOCIADOS
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1 font-normal">
+        <div className="text-center mb-2 sm:mb-4">
+          <img
+            src="/PV_logo_login.png"
+            alt="PV & ASOCIADOS Legal Group"
+            className="w-48 h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 object-contain mx-auto"
+          />
+          <p className="text-xs sm:text-sm text-slate-400 -mt-8 sm:-mt-10 md:-mt-12 font-normal tracking-wide">
             Legal Group Management Portal
           </p>
         </div>
@@ -112,10 +109,6 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
-
-        <p className="text-center text-[11px] text-slate-500 mt-6 font-medium">
-          &copy; {new Date().getFullYear()} PV & ASOCIADOS Legal Group. All rights reserved.
-        </p>
       </div>
     </div>
   );

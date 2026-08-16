@@ -28,7 +28,7 @@ export function Pagination({
         </p>
       )}
 
-      <div className="flex items-center gap-1.5 ml-auto">
+      <div className="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
         <Button
           variant="outline"
           size="sm"

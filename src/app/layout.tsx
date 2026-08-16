@@ -7,6 +7,14 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "PV & ASOCIADOS Legal Group - Admin Dashboard",
   description: "Management portal for PV & ASOCIADOS Legal Group application",
+  icons: {
+    icon: [
+      { url: "/PV_logo_sidebar.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/PV_logo_sidebar.png",
+    apple: "/PV_logo_sidebar.png",
+  },
 };
 
 export default function RootLayout({

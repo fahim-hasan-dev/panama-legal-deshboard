@@ -70,37 +70,32 @@ export function AuthProvider({
           }
           setIsLoading(false);
 
-          // Background sync profile
+          // Background sync profile (non-blocking, non-destructive on error)
           try {
             const res = await api.get("/user/me");
-            if (res?.data) {
-              setUserState(res.data);
-              localStorage.setItem("user", JSON.stringify(res.data));
+            const profileData = res?.data?.data || res?.data || res?.user;
+            if (profileData && typeof profileData === "object") {
+              setUserState(profileData);
+              const userStr = JSON.stringify(profileData);
+              localStorage.setItem("user", userStr);
+              setCookie("user", userStr, { path: "/", maxAge: 30 * 24 * 60 * 60 });
             }
           } catch (error) {
-            console.error("Failed to fetch user profile:", error);
-            setTokenState(null);
-            setUserState(null);
-            deleteCookie("accessToken");
-            deleteCookie("token");
-            deleteCookie("user");
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
+            // Keep existing valid token & stored user session on background sync failure
+            console.warn("Background user profile sync warning:", error);
           }
         } else {
           setTokenState(null);
           setUserState(null);
-          deleteCookie("accessToken");
-          deleteCookie("token");
-          deleteCookie("user");
+          deleteCookie("accessToken", { path: "/" });
+          deleteCookie("token", { path: "/" });
+          deleteCookie("user", { path: "/" });
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setIsLoading(false);
         }
       } catch (err) {
         console.error("Auth init error:", err);
-        setTokenState(null);
-        setUserState(null);
         setIsLoading(false);
       }
     };
@@ -110,12 +105,12 @@ export function AuthProvider({
 
   const setToken = (newToken: string | null) => {
     if (newToken) {
-      setCookie("accessToken", newToken);
-      setCookie("token", newToken);
+      setCookie("accessToken", newToken, { path: "/", maxAge: 30 * 24 * 60 * 60 });
+      setCookie("token", newToken, { path: "/", maxAge: 30 * 24 * 60 * 60 });
       localStorage.setItem("token", newToken);
     } else {
-      deleteCookie("accessToken");
-      deleteCookie("token");
+      deleteCookie("accessToken", { path: "/" });
+      deleteCookie("token", { path: "/" });
       localStorage.removeItem("token");
     }
     setTokenState(newToken);
@@ -124,7 +119,7 @@ export function AuthProvider({
   const setUser = (newUser: any) => {
     if (newUser) {
       const userStr = typeof newUser === "string" ? newUser : JSON.stringify(newUser);
-      setCookie("user", userStr);
+      setCookie("user", userStr, { path: "/", maxAge: 30 * 24 * 60 * 60 });
       localStorage.setItem("user", userStr);
       try {
         setUserState(typeof newUser === "string" ? JSON.parse(newUser) : newUser);
@@ -132,7 +127,7 @@ export function AuthProvider({
         setUserState(newUser);
       }
     } else {
-      deleteCookie("user");
+      deleteCookie("user", { path: "/" });
       localStorage.removeItem("user");
       setUserState(null);
     }

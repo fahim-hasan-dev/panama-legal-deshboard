@@ -34,48 +34,54 @@ export default function OverviewPage() {
     setLoading(true);
     try {
       const [usersRes, lawyersRes, casesRes, articlesRes, libRes, questionsRes] = await Promise.allSettled([
-        api.get("/user"),
-        api.get("/user?role=lawyer"),
-        api.get("/case"),
-        api.get("/article"),
-        api.get("/library"),
-        api.get("/case-question"),
+        api.get("/user?limit=1000"),
+        api.get("/user?role=lawyer&limit=1000"),
+        api.get("/case?limit=1000"),
+        api.get("/article?limit=1000"),
+        api.get("/library?limit=1000"),
+        api.get("/case-question?limit=1000"),
       ]);
 
-      const usersList = usersRes.status === "fulfilled" && usersRes.value?.data
-        ? (Array.isArray(usersRes.value.data) ? usersRes.value.data : usersRes.value.data.users || usersRes.value.data.data || [])
-        : [];
+      const usersVal = usersRes.status === "fulfilled" ? usersRes.value : null;
+      const usersObj = usersVal ? (usersVal.data || usersVal) : {};
+      const usersList = Array.isArray(usersObj) ? usersObj : (usersObj.users || usersObj.result || usersObj.data || []);
+      const usersTotal = usersObj.meta?.total || usersObj.pagination?.total || usersVal?.meta?.total || usersList.length;
 
-      const lawyersList = lawyersRes.status === "fulfilled" && lawyersRes.value?.data
-        ? (Array.isArray(lawyersRes.value.data) ? lawyersRes.value.data : lawyersRes.value.data.users || lawyersRes.value.data.data || [])
-        : [];
+      const lawyersVal = lawyersRes.status === "fulfilled" ? lawyersRes.value : null;
+      const lawyersObj = lawyersVal ? (lawyersVal.data || lawyersVal) : {};
+      const lawyersList = Array.isArray(lawyersObj) ? lawyersObj : (lawyersObj.users || lawyersObj.result || lawyersObj.data || []);
+      const lawyersTotal = lawyersObj.meta?.total || lawyersObj.pagination?.total || lawyersVal?.meta?.total || lawyersList.length;
 
-      const casesList = casesRes.status === "fulfilled" && casesRes.value?.data
-        ? (Array.isArray(casesRes.value.data) ? casesRes.value.data : casesRes.value.data.cases || casesRes.value.data.data || [])
-        : [];
+      const casesVal = casesRes.status === "fulfilled" ? casesRes.value : null;
+      const casesObj = casesVal ? (casesVal.data || casesVal) : {};
+      const casesList = Array.isArray(casesObj) ? casesObj : (casesObj.cases || casesObj.result || casesObj.data || []);
+      const casesTotal = casesObj.meta?.total || casesObj.pagination?.total || casesVal?.meta?.total || casesList.length;
 
-      const articlesList = articlesRes.status === "fulfilled" && articlesRes.value?.data
-        ? (Array.isArray(articlesRes.value.data) ? articlesRes.value.data : articlesRes.value.data.data || [])
-        : [];
+      const articlesVal = articlesRes.status === "fulfilled" ? articlesRes.value : null;
+      const articlesObj = articlesVal ? (articlesVal.data || articlesVal) : {};
+      const articlesList = Array.isArray(articlesObj) ? articlesObj : (articlesObj.articles || articlesObj.result || articlesObj.data || []);
+      const articlesTotal = articlesObj.meta?.total || articlesObj.pagination?.total || articlesVal?.meta?.total || articlesList.length;
 
-      const libList = libRes.status === "fulfilled" && libRes.value?.data
-        ? (Array.isArray(libRes.value.data) ? libRes.value.data : libRes.value.data.data || [])
-        : [];
+      const libVal = libRes.status === "fulfilled" ? libRes.value : null;
+      const libObj = libVal ? (libVal.data || libVal) : {};
+      const libList = Array.isArray(libObj) ? libObj : (libObj.result || libObj.data || libObj.libraries || []);
+      const libTotal = libObj.meta?.total || libObj.pagination?.total || libVal?.meta?.total || libList.length;
 
-      const questionsList = questionsRes.status === "fulfilled" && questionsRes.value?.data
-        ? (Array.isArray(questionsRes.value.data) ? questionsRes.value.data : questionsRes.value.data.data || [])
-        : [];
+      const questionsVal = questionsRes.status === "fulfilled" ? questionsRes.value : null;
+      const questionsObj = questionsVal ? (questionsVal.data || questionsVal) : {};
+      const questionsList = Array.isArray(questionsObj) ? questionsObj : (questionsObj.questions || questionsObj.result || questionsObj.data || []);
+      const questionsTotal = questionsObj.meta?.total || questionsObj.pagination?.total || questionsVal?.meta?.total || questionsList.length;
 
       const activeCases = casesList.filter((c: any) => c.status === "active" || c.status === "pending");
 
       setStats({
-        usersCount: usersList.length,
-        lawyersCount: lawyersList.length,
-        casesCount: casesList.length,
+        usersCount: usersTotal,
+        lawyersCount: lawyersTotal,
+        casesCount: casesTotal,
         activeCasesCount: activeCases.length,
-        articlesCount: articlesList.length,
-        libraryCount: libList.length,
-        questionsCount: questionsList.length,
+        articlesCount: articlesTotal,
+        libraryCount: libTotal,
+        questionsCount: questionsTotal,
       });
 
       setRecentCases(casesList.slice(0, 5));
@@ -191,9 +197,13 @@ export default function OverviewPage() {
         <Card className="shadow-xs hover:border-slate-300 transition-colors">
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Resources & Articles</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Library</p>
               <h3 className="text-2xl font-bold text-[#16253E]">{loading ? "..." : stats.articlesCount + stats.libraryCount}</h3>
-              <p className="text-[11px] text-slate-500 font-medium">{stats.questionsCount} Case Questions</p>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium pt-0.5">
+                <span className="font-semibold text-[#2E5089]">{loading ? "0" : stats.articlesCount} Articles</span>
+                <span>•</span>
+                <span className="font-semibold text-emerald-700">{loading ? "0" : stats.libraryCount} Library PDFs</span>
+              </div>
             </div>
             <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[#2E5089]">
               <BookOpen className="w-6 h-6" />
