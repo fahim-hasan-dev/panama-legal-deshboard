@@ -23,7 +23,7 @@ export function CaseListTable({ cases, isLoading, onViewDetails }: CaseListTable
     {
       header: "Client",
       cell: (c: any) => (
-        <span className="text-xs text-slate-700 font-medium">
+        <span className="text-xs text-slate-700 font-medium notranslate" translate="no">
           {c.citizen?.fullName || c.citizen?.name || c.client?.fullName || c.client?.name || "Citizen Client"}
         </span>
       ),
@@ -31,7 +31,7 @@ export function CaseListTable({ cases, isLoading, onViewDetails }: CaseListTable
     {
       header: "Assigned Lawyer",
       cell: (c: any) => (
-        <span className="text-xs text-slate-700 font-medium">
+        <span className="text-xs text-slate-700 font-medium notranslate" translate="no">
           {c.lawyer?.fullName || c.lawyer?.name || "Unassigned"}
         </span>
       ),

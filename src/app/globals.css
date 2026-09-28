@@ -119,3 +119,25 @@ body {
   color: #94a3b8 !important;
   font-style: normal !important;
 }
+
+/* Google Translate UI Overrides */
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.skiptranslate:not(.goog-te-gadget),
+#goog-gt-tt {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+.goog-te-gadget {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}

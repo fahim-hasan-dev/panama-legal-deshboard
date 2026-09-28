@@ -84,34 +84,34 @@ export function CaseDetailModal({
             {/* Citizen Info Box */}
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#2E5089]/10 text-[#2E5089] flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-7 h-7 rounded-full bg-[#2E5089]/10 text-[#2E5089] flex items-center justify-center font-bold text-xs shrink-0 notranslate" translate="no">
                   <User className="w-3.5 h-3.5" />
                 </div>
                 <div className="truncate">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Citizen Info</span>
-                  <p className="font-semibold text-slate-900 text-xs truncate">{citizenName}</p>
+                  <p className="font-semibold text-slate-900 text-xs truncate notranslate" translate="no">{citizenName}</p>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 flex items-center gap-1 truncate pt-0.5">
                 <Mail className="w-3 h-3 text-slate-400 shrink-0" />
-                <span className="truncate">{citizenEmail}</span>
+                <span className="truncate notranslate" translate="no">{citizenEmail}</span>
               </p>
             </div>
 
             {/* Lawyer Info Box */}
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0 notranslate" translate="no">
                   <Scale className="w-3.5 h-3.5" />
                 </div>
                 <div className="truncate">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lawyer Info</span>
-                  <p className="font-semibold text-slate-900 text-xs truncate">{lawyerName}</p>
+                  <p className="font-semibold text-slate-900 text-xs truncate notranslate" translate="no">{lawyerName}</p>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 flex items-center gap-1 truncate pt-0.5">
                 <Mail className="w-3 h-3 text-slate-400 shrink-0" />
-                <span className="truncate">{lawyerEmail}</span>
+                <span className="truncate notranslate" translate="no">{lawyerEmail}</span>
               </p>
             </div>
           </div>

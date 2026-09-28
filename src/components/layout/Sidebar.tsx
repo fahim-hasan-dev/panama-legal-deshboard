@@ -151,11 +151,11 @@ export function Sidebar({
         <div className="p-3 border-t border-slate-700/60 bg-[#121f34]">
           {!collapsed && (
             <div className="flex items-center gap-2.5 px-2 mb-3">
-              <div className="w-8 h-8 rounded-full bg-[#2E5089] border border-slate-600 flex items-center justify-center font-bold text-xs text-white">
+              <div className="w-8 h-8 rounded-full bg-[#2E5089] border border-slate-600 flex items-center justify-center font-bold text-xs text-white notranslate" translate="no">
                 {user?.name ? user.name.substring(0, 2).toUpperCase() : "AD"}
               </div>
               <div className="truncate">
-                <p className="text-xs font-semibold text-slate-200 truncate">{user?.name || "Administrator"}</p>
+                <p className="text-xs font-semibold text-slate-200 truncate notranslate" translate="no">{user?.name || "Administrator"}</p>
                 <span className="text-[10px] font-normal text-slate-400 uppercase">
                   {user?.role || "ADMIN"}
                 </span>

@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Toaster } from "react-hot-toast";
+import { GoogleTranslate } from "@/components/shared/GoogleTranslate";
 
 export const metadata: Metadata = {
   title: "PV & ASOCIADOS Legal Group - Admin Dashboard",
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-slate-50 text-slate-900 selection:bg-[#2E5089] selection:text-white">
         <AuthProvider>
+          <GoogleTranslate />
           <DashboardLayout>{children}</DashboardLayout>
           <Toaster
             position="top-right"

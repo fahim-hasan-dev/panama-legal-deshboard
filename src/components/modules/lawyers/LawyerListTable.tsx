@@ -22,12 +22,12 @@ export function LawyerListTable({ lawyers, isLoading, onView, onDelete }: Lawyer
         const initials = name.substring(0, 2).toUpperCase();
         return (
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#2E5089]/10 text-[#2E5089] border border-[#2E5089]/20 flex items-center justify-center font-bold text-xs">
+            <div className="w-9 h-9 rounded-full bg-[#2E5089]/10 text-[#2E5089] border border-[#2E5089]/20 flex items-center justify-center font-bold text-xs notranslate" translate="no">
               {initials}
             </div>
             <div>
-              <p className="font-semibold text-slate-900 text-sm">{name}</p>
-              <p className="text-xs text-slate-500">{lawyer.email}</p>
+              <p className="font-semibold text-slate-900 text-sm notranslate" translate="no">{name}</p>
+              <p className="text-xs text-slate-500 notranslate" translate="no">{lawyer.email}</p>
             </div>
           </div>
         );
@@ -36,7 +36,7 @@ export function LawyerListTable({ lawyers, isLoading, onView, onDelete }: Lawyer
     {
       header: "License / Bar ID",
       cell: (lawyer: any) => (
-        <Badge variant="outline" className="font-mono text-[11px] bg-slate-50 border-slate-300">
+        <Badge variant="outline" className="font-mono text-[11px] bg-slate-50 border-slate-300 notranslate" translate="no">
           {lawyer.identityNumber || "PA-BAR-VERIFIED"}
         </Badge>
       ),
@@ -52,7 +52,7 @@ export function LawyerListTable({ lawyers, isLoading, onView, onDelete }: Lawyer
     {
       header: "Phone / Contact",
       cell: (lawyer: any) => (
-        <span className="text-xs text-slate-600">{lawyer.phoneNumber || "N/A"}</span>
+        <span className="text-xs text-slate-600 notranslate" translate="no">{lawyer.phoneNumber || "N/A"}</span>
       ),
     },
     {

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { navItems } from "./Sidebar";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 
 export function Navbar({
   setMobileOpen,
@@ -65,18 +66,21 @@ export function Navbar({
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-6">
+      <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+        {/* Language Switcher Dropdown */}
+        <LanguageSwitcher />
+
         {/* Admin Profile Dropdown Container */}
         <div className="relative" ref={profileMenuRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-full bg-[#2E5089] text-white font-bold text-sm flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-[#2E5089] text-white font-bold text-sm flex items-center justify-center shadow-xs notranslate" translate="no">
               {user?.name ? user.name.substring(0, 2).toUpperCase() : "AD"}
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-sm font-bold text-[#16253E] leading-tight">
+              <p className="text-sm font-bold text-[#16253E] leading-tight notranslate" translate="no">
                 {user?.name || "Admin User"}
               </p>
               <p className="text-xs text-slate-500 capitalize font-medium mt-0.5">
@@ -88,8 +92,8 @@ export function Navbar({
           {showProfileMenu && (
             <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in-50 slide-in-from-top-2">
               <div className="px-4 py-3 border-b border-slate-100">
-                <p className="text-sm font-bold text-[#16253E]">{user?.name || "Admin User"}</p>
-                <p className="text-xs text-slate-500 truncate font-normal mt-0.5">{user?.email || "admin@panamalegal.com"}</p>
+                <p className="text-sm font-bold text-[#16253E] notranslate" translate="no">{user?.name || "Admin User"}</p>
+                <p className="text-xs text-slate-500 truncate font-normal mt-0.5 notranslate" translate="no">{user?.email || "admin@panamalegal.com"}</p>
               </div>
 
               <div className="py-1">

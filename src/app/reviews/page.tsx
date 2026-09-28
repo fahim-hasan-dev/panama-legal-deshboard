@@ -141,7 +141,7 @@ export default function ReviewsPage() {
                     <div>
                       <Badge variant="outline" className="bg-[#2E5089]/10 text-[#2E5089] font-semibold border-[#2E5089]/30 text-[11px] flex items-center gap-1 w-fit">
                         <Scale className="w-3 h-3" />
-                        Target: {targetName}
+                        Target: <span className="notranslate" translate="no">{targetName}</span>
                       </Badge>
                       <div className="flex items-center gap-1 mt-2.5">
                         {[...Array(5)].map((_, i) => (
@@ -176,7 +176,7 @@ export default function ReviewsPage() {
                   <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
                     <span className="flex items-center gap-1">
                       <User className="w-3 h-3 text-slate-400" />
-                      By: <strong className="text-slate-800 font-semibold">{reviewerName}</strong>
+                      By: <strong className="text-slate-800 font-semibold notranslate" translate="no">{reviewerName}</strong>
                       <span className="text-[10px] text-slate-400 capitalize">({reviewerRole})</span>
                     </span>
                     <span>{rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : "N/A"}</span>

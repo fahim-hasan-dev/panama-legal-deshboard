@@ -22,12 +22,12 @@ export function UserListTable({ users, isLoading, onView, onDelete }: UserListTa
         const initials = name.substring(0, 2).toUpperCase();
         return (
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-xs text-[#2E5089]">
+            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-xs text-[#2E5089] notranslate" translate="no">
               {initials}
             </div>
             <div>
-              <p className="font-semibold text-slate-900 text-sm">{name}</p>
-              <p className="text-xs text-slate-500">{user.email}</p>
+              <p className="font-semibold text-slate-900 text-sm notranslate" translate="no">{name}</p>
+              <p className="text-xs text-slate-500 notranslate" translate="no">{user.email}</p>
             </div>
           </div>
         );
@@ -55,7 +55,7 @@ export function UserListTable({ users, isLoading, onView, onDelete }: UserListTa
     {
       header: "Phone / Contact",
       cell: (user: any) => (
-        <span className="text-xs text-slate-600">{user.phoneNumber || "N/A"}</span>
+        <span className="text-xs text-slate-600 notranslate" translate="no">{user.phoneNumber || "N/A"}</span>
       ),
     },
     {
