@@ -14,15 +14,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const publicPaths = ["/login", "/privacy-policy", "/terms-and-conditions"];
+
   useEffect(() => {
-    if (!isLoading && !token && pathname !== "/login") {
+    if (!isLoading && !token && !publicPaths.includes(pathname)) {
       if (typeof window !== "undefined") {
         window.location.replace("/login");
       }
     }
   }, [token, isLoading, pathname]);
 
-  if (pathname === "/login") {
+  if (publicPaths.includes(pathname)) {
     return <>{children}</>;
   }
 
