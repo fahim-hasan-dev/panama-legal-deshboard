@@ -46,7 +46,7 @@ export function AddLawyerModal({ isOpen, onClose, onSuccess }: AddLawyerModalPro
     }
     setSubmitting(true);
     try {
-      await api.post("/user/create-lawyer", {
+      const lawyerData = {
         fullName,
         name: fullName,
         email,
@@ -55,7 +55,13 @@ export function AddLawyerModal({ isOpen, onClose, onSuccess }: AddLawyerModalPro
         workArea,
         identityNumber,
         role: "lawyer",
-      });
+        isEmailVerified: true,
+      };
+
+      const payload = new FormData();
+      payload.append("data", JSON.stringify(lawyerData));
+
+      await api.post("/user/create-user", payload);
       toast.success("Lawyer registered! Credentials sent to email.");
       resetForm();
       onClose();

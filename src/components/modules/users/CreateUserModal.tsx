@@ -45,8 +45,13 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
     try {
       setLoading(true);
       
+      const payloadData = {
+        ...formData,
+        isEmailVerified: true,
+      };
+      
       const payload = new FormData();
-      payload.append("data", JSON.stringify(formData));
+      payload.append("data", JSON.stringify(payloadData));
 
       await api.post("/user/create-user", payload);
       
@@ -136,7 +141,6 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
               required
             >
               <option value="citizen">Citizen</option>
-              <option value="lawyer">Lawyer</option>
               <option value="expert">Expert</option>
               <option value="student">Student</option>
             </select>
