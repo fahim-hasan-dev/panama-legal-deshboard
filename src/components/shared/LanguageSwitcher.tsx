@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Globe, Check, ChevronDown } from "lucide-react";
 
 export function LanguageSwitcher() {
-  const [currentLang, setCurrentLang] = useState<"en" | "es">("en");
+  const [currentLang, setCurrentLang] = useState<"en" | "es">("es");
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -14,10 +14,10 @@ export function LanguageSwitcher() {
       const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/i);
       if (match && match[1]) {
         const lang = match[1].toLowerCase();
-        if (lang === "es") {
-          setCurrentLang("es");
-        } else {
+        if (lang === "en") {
           setCurrentLang("en");
+        } else {
+          setCurrentLang("es");
         }
       }
     }

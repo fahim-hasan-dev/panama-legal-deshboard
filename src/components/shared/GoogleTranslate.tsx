@@ -126,6 +126,19 @@ export function GoogleTranslate() {
 
   // Initialize Google Translate for EN and ES only
   useEffect(() => {
+    // Default to Spanish if no cookie is set
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/i);
+    if (!match) {
+      const domain = window.location.hostname.split(".").slice(-2).join(".");
+      const date = new Date();
+      date.setFullYear(date.getFullYear() + 1);
+      const expires = date.toUTCString();
+      document.cookie = `googtrans=/en/es; expires=${expires}; path=/; SameSite=Lax`;
+      if (domain.includes(".")) {
+        document.cookie = `googtrans=/en/es; expires=${expires}; path=/; domain=.${domain}; SameSite=Lax`;
+      }
+    }
+
     let container = document.getElementById("google-translate-container");
     if (!container) {
       container = document.createElement("div");

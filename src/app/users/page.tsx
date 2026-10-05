@@ -2,14 +2,16 @@
 
 import React, { useState } from "react";
 import { useListQuery } from "@/hooks/useListQuery";
-import { Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { UserListTable } from "@/components/modules/users/UserListTable";
 import { UserDetailModal } from "@/components/modules/users/UserDetailModal";
 import { DeleteUserModal } from "@/components/modules/users/DeleteUserModal";
+import { CreateUserModal } from "@/components/modules/users/CreateUserModal";
 import { Pagination } from "@/components/shared/Pagination";
+import { Button } from "@/components/ui/button";
+import { Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 
@@ -19,6 +21,7 @@ export default function UsersPage() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const initialParams = selectedRole !== "all" ? { role: selectedRole } : {};
 
@@ -67,9 +70,18 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-[#16253E] tracking-tight">User Management</h1>
           <p className="text-xs text-slate-500 font-normal">Manage registered citizens, legal experts, and law students.</p>
         </div>
-        <Badge variant="outline" className="px-3 py-1 bg-white text-slate-700 font-semibold">
-          Total Users: {totalItems}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="px-3 py-1 bg-white text-slate-700 font-semibold">
+            Total Users: {totalItems}
+          </Badge>
+          <Button 
+            onClick={() => setShowCreateModal(true)}
+            className="bg-[#2E5089] hover:bg-[#1f3a69] text-white flex items-center gap-2 shadow-xs"
+            size="sm"
+          >
+            <Plus className="w-4 h-4" /> Add User
+          </Button>
+        </div>
       </div>
 
       <Card className="shadow-xs">
@@ -133,6 +145,15 @@ export default function UsersPage() {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      <CreateUserModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={() => {
+          setShowCreateModal(false);
+          refresh();
+        }}
       />
     </div>
   );
