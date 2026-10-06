@@ -14,7 +14,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const publicPaths = ["/login", "/privacy-policy", "/terms-and-conditions"];
+  const publicPaths = ["/login", "/privacy-policy", "/terms-and-conditions", "/delete-account"];
 
   useEffect(() => {
     if (!isLoading && !token && !publicPaths.includes(pathname)) {
